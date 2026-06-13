@@ -1,38 +1,30 @@
 import type { Metadata } from "next";
-import { Orbitron, Rajdhani } from "next/font/google";
+import { Inter } from "next/font/google";
 import "./globals.css";
-import DashboardLayout from "@/components/layout/DashboardLayout";
+import Sidebar from "../components/layout/Sidebar";
+import { AnalysisProvider } from "@/context/AnalysisContext";
 
-const orbitron = Orbitron({
-  subsets: ["latin"],
-  variable: "--font-orbitron",
-});
-
-const rajdhani = Rajdhani({
-  subsets: ["latin"],
-  weight: ["300", "400", "500", "600", "700"],
-  variable: "--font-rajdhani",
-});
+const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "AEGIS",
-  description: "AI Space Threat Intelligence Platform",
+  title: "AEGIS — AI Space Defense Platform",
+  description: "Advanced space weather threat monitoring",
 };
 
 export default function RootLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode;
-}>) {
+}) {
   return (
-    <html
-      lang="en"
-      className={`${orbitron.variable} ${rajdhani.variable}`}
-    >
-      <body>
-        <DashboardLayout>
-          {children}
-        </DashboardLayout>
+    <html lang="en">
+      <body className={`${inter.className} bg-[#07111f] text-white`}>
+        <AnalysisProvider>
+          <div className="flex min-h-screen">
+            <Sidebar />
+            <main className="flex-1 overflow-auto">{children}</main>
+          </div>
+        </AnalysisProvider>
       </body>
     </html>
   );

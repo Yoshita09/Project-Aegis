@@ -146,7 +146,7 @@ const agents = [
     desc: "Analyzes VELC coronagraph images for coronal loop inflation, arc instability, and flux rope formation.",
     model: "ViT + Temporal Transformer",
     metrics: [
-      { label: "Loop Expansion", value: 82, color: "#ef4444" },
+      { label: "Loop Expansion", value: 82, color: "#eb6c6c" },
       { label: "Flux Rope Prob.", value: 74, color: "#f59e0b" },
       { label: "Eruption Signal", value: 79, color: "#f59e0b" },
     ],
@@ -156,7 +156,7 @@ const agents = [
     desc: "Processes SWIS-ASPEX particle data to detect plasma disturbances and velocity anomalies.",
     model: "LSTM / TFT",
     metrics: [
-      { label: "Plasma Instability", value: 81, color: "#ef4444" },
+      { label: "Plasma Instability", value: 81, color: "#eb6c6c" },
       { label: "Wind Anomaly", value: 72, color: "#f59e0b" },
     ],
   },
@@ -165,8 +165,8 @@ const agents = [
     desc: "Analyzes magnetometer Bx/By/Bz/Bt vectors for reconnection and field twisting signatures.",
     model: "Transformer Encoder",
     metrics: [
-      { label: "Magnetic Stress", value: 89, color: "#ef4444" },
-      { label: "Reconnection Prob.", value: 84, color: "#ef4444" },
+      { label: "Magnetic Stress", value: 89, color: "#eb6c6c" },
+      { label: "Reconnection Prob.", value: 84, color: "#eb6c6c" },
     ],
   },
   {
@@ -174,7 +174,7 @@ const agents = [
     desc: "Compares current signatures against SOHO CME Catalog, NASA CDAWeb, and NOAA SWPC archives.",
     model: "RAG + LLM",
     metrics: [
-      { label: "Historical Match", value: 86, color: "#ef4444" },
+      { label: "Historical Match", value: 86, color: "#eb6c6c" },
       { label: "Pattern Confidence", value: 78, color: "#f59e0b" },
     ],
   },
@@ -342,7 +342,7 @@ export default function MissionControl() {
             <div className="flex items-center gap-3 mb-3">
               <div className="w-[3px] h-5 bg-cyan-500 rounded-full flex-shrink-0" />
               <span className="text-white text-[13px] font-bold tracking-widest uppercase">Agent Status</span>
-              <span className="text-[#3a5a7f] text-xs">7 agents active</span>
+              <span className="text-[#3a5a7f] text-xs">6 agents active</span>
             </div>
 
             {/* 4-col agent grid — each card is fully fluid */}
@@ -368,7 +368,7 @@ export default function MissionControl() {
                   <div className="text-white text-[13px] font-bold mb-1 leading-tight">{agent.name}</div>
 
                   {/* Description */}
-                  <p className="text-[#3a5070] text-[10px] leading-relaxed mb-3 flex-1">{agent.desc}</p>
+                  <p className="text-[#5e779d] text-[11px]  mb-2 flex-1">{agent.desc}</p>
 
                   {/* Metrics — label on top, bar below, percentage right */}
                   <div className="space-y-0 mb-3">
