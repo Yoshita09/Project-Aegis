@@ -28,6 +28,7 @@ import {
   TrendingUp,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import Topbar from "@/components/Topbar";
 
 // ── Data generators ───────────────────────────────────────────────────────────
 
@@ -218,18 +219,15 @@ export default function MissionControl() {
   const [protonData] = useState(generateProtonData);
 
   return (
+  <div>
+    <Topbar
+      title="MISSION CONTROL"
+      badge="LIVE MONITORING"
+      badgeColor="cyan"
+      subtitle="Real-time CME prediction & satellite protection — Aditya-L1 data stream"
+    />
+
     <div className="min-h-screen bg-[#060d1a] p-4 xl:p-5 font-sans overflow-x-hidden">
-
-      {/* Header */}
-      <div className="mb-4">
-        <h1 className="text-xl xl:text-[22px] font-bold text-white tracking-tight leading-none">
-          Mission Control
-        </h1>
-        <p className="text-[#3a5a7f] text-xs xl:text-[13px] mt-1">
-          Real-time CME prediction &amp; satellite protection — Aditya-L1 data stream
-        </p>
-      </div>
-
       {/* ── Outer layout: scrollable content + fixed-width sidebar ── */}
       <div className="flex gap-4 items-start">
 
@@ -444,5 +442,6 @@ export default function MissionControl() {
 
       </div>
     </div>
+  </div>
   );
 }

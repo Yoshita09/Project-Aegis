@@ -4,6 +4,7 @@ import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Upload, CheckCircle, Loader2, FileArchive, Zap } from "lucide-react";
 import { useAnalysis } from "../../context/AnalysisContext";
+import Topbar from "@/components/Topbar";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -334,14 +335,17 @@ export default function DataInputPage() {
   }
 
   return (
-    <div className="space-y-8 p-6 max-w-7xl mx-auto min-h-screen text-slate-100">
-      <div>
-        <p className="text-xs font-mono font-bold text-cyan-400 tracking-widest uppercase">Step 2 of 3</p>
-        <h1 className="text-2xl sm:text-4xl font-semibold tracking-tight mt-1 text-white">Data Input</h1>
-        <p className="text-sm text-slate-400 mt-2 max-w-2xl">
-          Upload telemetry payloads from ADITYA-L1 instruments (.fits, .cdf, .nc).Required payloads must be uploaded before platform analysis can execute.
-        </p>
-      </div>
+  <div>
+    <Topbar
+      title="DATA INPUT"
+      badge="TELEMETRY UPLOAD"
+      badgeColor="cyan"
+      subtitle="Upload telemetry payloads from ADITYA-L1 instruments for AI analysis"
+    />
+
+    <div className="space-y-8 p-6 max-w-7xl mx-auto text-slate-100">
+    
+      
 
       <div>
         <p className="text-xs font-mono font-bold text-slate-500 tracking-wider uppercase mb-4">Required Payloads</p>
@@ -432,5 +436,6 @@ export default function DataInputPage() {
         </button>
       </div>
     </div>
+  </div>
   );
 }
