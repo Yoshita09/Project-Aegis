@@ -262,6 +262,10 @@ export default function DataInputPage() {
   const [loadingText, setLoadingText] = useState("");
 
   const isReadyToAnalyze = velcUploaded && swisUploaded && magUploaded;
+  const [progress, setProgress] = useState(0);
+const [activeAgent, setActiveAgent] = useState("VELC");
+const [completedAgents, setCompletedAgents] = useState<string[]>([]);
+const [status, setStatus] = useState("Initializing AI Pipeline...");
 
   async function uploadToBackend(file: File, agentType: "velc" | "swis" | "mag") {
     const formData = new FormData();
@@ -301,39 +305,80 @@ export default function DataInputPage() {
   }
 
   async function triggerAnalysis() {
-    if (!isReadyToAnalyze) return;
-    
-    setIsAnalyzing(true);
-    setLoadingText("Initializing AI Agents...");
+  if (!isReadyToAnalyze) return;
 
-    setTimeout(() => { setLoadingText("VELC Agent computing features..."); }, 1000);
-    setTimeout(() => { setLoadingText("SWIS-ASPEX Agent evaluating plasma..."); }, 2000);
-    setTimeout(() => { setLoadingText("MAG Agent calculating vectors..."); }, 3000);
+  setIsAnalyzing(true);
+  setProgress(0);
+  setCompletedAgents([]);
 
-    try {
-      const response = await fetch(
-  "http://localhost:8000/api/v1/analyze",
+  const steps = [
   {
-    method: "POST",
+    agent: "VELC",
+    progress: 20,
+    status: "Loading FITS telemetry..."
+  },
+  {
+    agent: "SWIS",
+    progress: 40,
+    status: "Evaluating plasma instability..."
+  },
+  {
+    agent: "MAG",
+    progress: 60,
+    status: "Computing magnetic stress vectors..."
+  },
+  {
+    agent: "FUSION",
+    progress: 80,
+    status: "Correlating agent outputs..."
+  },
+  {
+    agent: "PREDICTION",
+    progress: 100,
+    status: "Generating CME prediction..."
   }
-);
-      if (!response.ok) throw new Error("Analysis failed.");
-      
-      const resultData = await response.json();
+];
+  
 
-      setTimeout(() => {
-        setAnalysisResults(resultData);
-        setAnalysisComplete(true);
-        router.push("/solar-monitor");
-      }, 4000);
+  steps.forEach((step, index) => {
+    setTimeout(() => {
 
-    } catch (err) {
-      console.error("Analysis sequence halted:", err);
-      alert("AI pipeline failed.");
-      setIsAnalyzing(false);
-    }
+      setActiveAgent(step.agent);
+      setProgress(step.progress);
+      setStatus(step.status);
+
+      if (step.agent !== "FUSION") {
+  setCompletedAgents((prev) =>
+    prev.includes(step.agent)
+      ? prev
+      : [...prev, step.agent]
+  );
+}
+
+    }, index * 1800);
+  });
+
+  try {
+    const response = await fetch(
+      "http://localhost:8000/api/v1/analyze",
+      {
+        method: "POST",
+      }
+    );
+
+    const resultData = await response.json();
+
+    setTimeout(() => {
+      setAnalysisResults(resultData);
+      setAnalysisComplete(true);
+      router.push("/solar-monitor");
+    }, 9500);
+
+  } catch (err) {
+    console.error(err);
+    setIsAnalyzing(false);
   }
-
+}
   return (
   <div>
     <Topbar
@@ -435,6 +480,77 @@ export default function DataInputPage() {
           )}
         </button>
       </div>
+      {isAnalyzing && (
+  <div className="border border-cyan-500/20 bg-slate-950/70 rounded-xl p-6 space-y-5 backdrop-blur-md">
+
+    {/* Progress Header */}
+    <div className="flex justify-between items-center">
+      <div>
+        <h3 className="text-cyan-400 font-mono text-sm tracking-wider">
+          AI PIPELINE EXECUTION
+        </h3>
+        <p className="text-slate-400 text-xs mt-1">
+          Multi-Agent Solar Event Analysis Running...
+        </p>
+      </div>
+
+      
+    </div>
+
+    {/* Progress Bar */}
+    <div className="w-full h-2 bg-slate-800 rounded-full overflow-hidden">
+      <div
+        className="h-full bg-cyan-500 transition-all duration-700"
+        style={{ width: `${progress}%` }}
+      />
+    </div>
+
+    {/* Active Agent */}
+    <div className="grid md:grid-cols-2 gap-4">
+
+      <div className="border border-slate-800 rounded-lg p-4">
+        <p className="text-xs text-slate-500 mb-2">
+          ACTIVE AGENT
+        </p>
+
+        <div className="flex items-center gap-2">
+          <Loader2
+            className="animate-spin text-cyan-400"
+            size={16}
+          />
+          <span className="font-mono text-cyan-300">
+            {activeAgent}
+          </span>
+        </div>
+      </div>
+
+      <div className="border border-slate-800 rounded-lg p-4">
+        <p className="text-xs text-slate-500 mb-2">
+          COMPLETED
+        </p>
+
+        <div className="flex gap-2 flex-wrap">
+          {completedAgents.map((agent, index) => (
+  <span
+    key={`${agent}-${index}`}
+              className="px-2 py-1 text-xs rounded bg-cyan-500/10 text-cyan-400"
+            >
+              {agent}
+            </span>
+          ))}
+        </div>
+      </div>
+    </div>
+
+    {/* Terminal Log */}
+    <div className="border border-slate-800 rounded-lg p-4 bg-black/40">
+      <p className="text-green-400 font-mono text-sm">
+        {status}
+      </p>
+    </div>
+
+  </div>
+)}
     </div>
   </div>
   );
