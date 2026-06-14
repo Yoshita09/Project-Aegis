@@ -175,8 +175,13 @@ function VelcOutput({ data }: VelcOutputProps) {
 }
 
 function SwisOutput({ data }: SwisOutputProps) {
-  const plasma = data ? Math.round(data.plasma_instability * 100) : 0;
-  const wind = data ? Math.round(data.wind_anomaly * 100) : 0;
+  const plasma = data
+  ? (data.plasma_instability * 100).toFixed(2)
+  : "0.00";
+
+const wind = data
+  ? (data.wind_anomaly * 100).toFixed(2)
+  : "0.00";
 
   return (
     <div className="bg-slate-950/40 border border-slate-800/60 rounded-lg p-3">
@@ -372,7 +377,7 @@ const [status, setStatus] = useState("Initializing AI Pipeline...");
       setAnalysisResults(resultData);
       setAnalysisComplete(true);
       router.push("/solar-monitor");
-    }, 9500);
+    }, 5000);
 
   } catch (err) {
     console.error(err);

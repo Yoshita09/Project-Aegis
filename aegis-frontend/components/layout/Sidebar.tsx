@@ -14,6 +14,8 @@ import {
   Lock,
 } from "lucide-react";
 import { useAnalysis } from "@/context/AnalysisContext";
+import logo from "@/app/assets/logo.png";
+import Image from "next/image";
 
 const topNavItems = [
   { name: "Overview", href: "/", icon: LayoutDashboard },
@@ -36,10 +38,23 @@ export default function Sidebar() {
   return (
     <aside className="w-64 min-h-screen border-r border-slate-800 bg-[#07111f] flex-shrink-0">
       <div className="p-6">
-        <h1 className="text-2xl font-bold text-cyan-400">AEGIS</h1>
-        <p className="text-xs text-slate-500 mt-1">AI Space Defense Platform</p>
-      </div>
-
+  <div className="flex items-center gap-3">
+    <Image
+  src={logo}
+  alt="AEGIS Logo"
+  width={42}
+  height={46}
+/>
+    <div>
+      <h1 className="text-2xl font-bold text-cyan-400">
+        AEGIS
+      </h1>
+      <p className="text-xs text-slate-500">
+        AI Space Defense Platform
+      </p>
+    </div>
+  </div>
+</div>
       <div className="px-4">
         <div className="mb-6 rounded-xl border border-red-500/30 bg-red-500/10 p-4">
           <p className="text-red-400 text-sm font-semibold">● CRITICAL</p>

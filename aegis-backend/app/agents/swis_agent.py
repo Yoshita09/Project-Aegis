@@ -9,6 +9,7 @@ import torch
 from pytorch_forecasting import (
     TimeSeriesDataSet,
 )
+
 from pytorch_forecasting.models import (
     TemporalFusionTransformer,
 )
@@ -21,6 +22,7 @@ from app.schemas.agent_outputs import SwisOutput
 class SwisAgent(BaseAgent[SwisOutput]):
 
     name = "swis"
+
     model_filename = "Agent2_SolarWind.pth"
 
     def load(self) -> None:
@@ -109,6 +111,8 @@ class SwisAgent(BaseAgent[SwisOutput]):
                 ),
         })
 
+        # Feature Engineering
+
         df["density_change"] = (
             df["proton_density"].diff()
         )
@@ -126,7 +130,26 @@ class SwisAgent(BaseAgent[SwisOutput]):
             )
         )
 
-        df = df.fillna(0)
+        # Data Cleaning
+
+        df = df.replace(
+            [
+                -1e31,
+                -9999,
+                float("inf"),
+                float("-inf")
+            ],
+            0
+        )
+
+        df = (
+            df
+            .ffill()
+            .bfill()
+            .fillna(0)
+        )
+
+        # TFT fields
 
         df["time_idx"] = range(
             len(df)
@@ -134,15 +157,24 @@ class SwisAgent(BaseAgent[SwisOutput]):
 
         df["series"] = 0
 
+        # Dummy target required by TFT
+        # Must match training configuration
+
         df["label"] = 0
 
         dataset = TimeSeriesDataSet(
             df,
+
             time_idx="time_idx",
+
             target="label",
-            group_ids=["series"],
+
+            group_ids=[
+                "series"
+            ],
 
             max_encoder_length=48,
+
             max_prediction_length=1,
 
             time_varying_known_reals=[
@@ -189,10 +221,22 @@ class SwisAgent(BaseAgent[SwisOutput]):
             / self.model_filename
         )
 
+        logger.info(
+            f"[{self.name}] loading weights "
+            f"from {weights_path}"
+        )
+
         state = torch.load(
             weights_path,
             map_location="cpu"
         )
+
+        if (
+            isinstance(state, dict)
+            and
+            "state_dict" in state
+        ):
+            state = state["state_dict"]
 
         tft.load_state_dict(
             state
@@ -200,62 +244,136 @@ class SwisAgent(BaseAgent[SwisOutput]):
 
         tft.eval()
 
-        loader = (
-            dataset.to_dataloader(
-                train=False,
-                batch_size=1,
-                shuffle=False,
+        loader = dataset.to_dataloader(
+            train=False,
+            batch_size=128,
+            shuffle=False
+        )
+
+        with torch.no_grad():
+
+            raw_preds = tft.predict(
+                loader,
+                mode="raw"
+            )
+
+            if hasattr(
+                raw_preds,
+                "prediction"
+            ):
+                pred = (
+                    raw_preds
+                    .prediction
+                )
+
+            elif isinstance(
+                raw_preds,
+                dict
+            ):
+                pred = (
+                    raw_preds[
+                        "prediction"
+                    ]
+                )
+
+            else:
+                raise RuntimeError(
+                    "Unable to extract "
+                    "predictions from TFT."
+                )
+
+            logger.info(
+                f"[{self.name}] "
+                f"prediction shape="
+                f"{pred.shape}"
+            )
+
+            probs = torch.softmax(
+                pred,
+                dim=-1
+            )
+
+            anomaly_probs = (
+                probs[:, :, 1]
+                .detach()
+                .cpu()
+                .numpy()
+                .flatten()
+            )
+
+        density_score = (
+            abs(
+                df["density_change"]
+            )
+            /
+            (
+                abs(
+                    df["density_change"]
+                ).max()
+                + 1e-6
             )
         )
 
-        batch = next(iter(loader))
-
-        x, y = batch
-
-        with torch.no_grad():
-            raw = tft(x)
-
-        pred = raw["prediction"]
-
-        logger.info(
-            f"[swis] prediction shape = {pred.shape}"
+        thermal_score = (
+            abs(
+                df["thermal_change"]
+            )
+            /
+            (
+                abs(
+                    df["thermal_change"]
+                ).max()
+                + 1e-6
+            )
         )
 
-        pred = (
-            pred
-            .squeeze(0)
-            .squeeze(0)
-            .detach()
-            .cpu()
+        alpha_score = (
+            abs(
+                df["alpha_ratio"]
+                -
+                df["alpha_ratio"]
+                .median()
+            )
+            /
+            (
+                abs(
+                    df["alpha_ratio"]
+                    -
+                    df["alpha_ratio"]
+                    .median()
+                ).max()
+                + 1e-6
+            )
         )
 
-        probs = torch.softmax(
-            pred,
-            dim=-1
+        plasma_instability = float(
+            (
+                density_score.mean()
+                +
+                thermal_score.mean()
+                +
+                alpha_score.mean()
+            )
+            / 3
         )
 
-        logger.info(
-            f"[swis] probs = {probs}"
-        )
-
-        plasma_instability = (
-            probs[1].item() * 100
-        )
-
-        wind_anomaly = (
-            probs[0].item() * 100
+        wind_anomaly = float(
+            anomaly_probs.max()
         )
 
         logger.info(
             f"[{self.name}] "
-            f"plasma={plasma_instability:.2f} "
-            f"wind={wind_anomaly:.2f}"
+            f"plasma="
+            f"{plasma_instability:.3f} "
+            f"wind="
+            f"{wind_anomaly:.3f}"
         )
 
         return SwisOutput(
             plasma_instability=
-                plasma_instability,
+                plasma_instability 
+            ,
 
             wind_anomaly=
-                wind_anomaly,
+                wind_anomaly
         )
