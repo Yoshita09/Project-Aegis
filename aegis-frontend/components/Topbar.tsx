@@ -11,16 +11,29 @@ interface TopbarProps {
   subtitle?: string;
 }
 
-export default function Topbar({ title, badge, badgeColor = "green", subtitle }: TopbarProps) {
+export default function Topbar({
+  title,
+  badge,
+  badgeColor = "green",
+  subtitle,
+}: TopbarProps) {
   const [time, setTime] = useState<string>("");
 
   useEffect(() => {
     const update = () => {
       const now = new Date();
-      setTime(now.toUTCString().split(" ")[4] + " UTC");
+
+      const istTime = now.toLocaleTimeString("en-IN", {
+        timeZone: "Asia/Kolkata",
+        hour12: false,
+      });
+
+      setTime(`${istTime} IST`);
     };
+
     update();
     const id = setInterval(update, 1000);
+
     return () => clearInterval(id);
   }, []);
 
@@ -39,6 +52,7 @@ export default function Topbar({ title, badge, badgeColor = "green", subtitle }:
           <h1 className="text-xl font-bold text-slate-100 tracking-wide">
             {title}
           </h1>
+
           {badge && (
             <span
               className={`text-[10px] font-semibold px-2 py-0.5 rounded border ${badgeColors[badgeColor]}`}
@@ -47,10 +61,12 @@ export default function Topbar({ title, badge, badgeColor = "green", subtitle }:
             </span>
           )}
         </div>
+
         {subtitle && (
           <p className="text-xs text-slate-500 mt-1">{subtitle}</p>
         )}
       </div>
+
       <div className="text-xs text-slate-500 font-mono flex items-center gap-1.5">
         <svg
           xmlns="http://www.w3.org/2000/svg"
