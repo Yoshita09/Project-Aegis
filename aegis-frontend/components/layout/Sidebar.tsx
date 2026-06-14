@@ -26,7 +26,7 @@ const lockedNavItems = [
   { name: "Arrival & Impact", href: "/arrival-impact", icon: ShieldAlert },
   { name: "Satellite Risk", href: "/satellite-risk", icon: Satellite },
   { name: "Agent Reasoning", href: "/agent-reasoning", icon: Brain },
-  { name: "System Status", href: "/system-status", icon: Server },
+  // { name: "System Status", href: "/system-status", icon: Server },
 ];
 
 export default function Sidebar() {

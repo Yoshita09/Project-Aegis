@@ -233,7 +233,7 @@ export default function ArrivalImpactPage() {
           </div>
         </div>
 
-        <Panel title="WHY PHYSICS-INFORMED NEURAL NETWORK?">
+        {/* <Panel title="WHY PHYSICS-INFORMED NEURAL NETWORK?">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             {whyPinn.map((item) => (
               <div key={item.title} className="bg-[#0b1018] border border-slate-800/60 rounded-md p-4">
@@ -242,7 +242,7 @@ export default function ArrivalImpactPage() {
               </div>
             ))}
           </div>
-        </Panel>
+        </Panel> */}
       </div>
     </div>
   );

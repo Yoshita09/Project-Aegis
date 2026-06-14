@@ -46,16 +46,18 @@ const pipelineData: PipelineDataPoint[] = [
   { name: "Vision", value: 100, color: "#fbbf24" },
   { name: "Solar Wind", value: 100, color: "#22d3ee" },
   { name: "Magnetic", value: 100, color: "#a78bfa" },
-  { name: "Knowledge", value: 100, color: "#34d399" },
   { name: "CME Genesis", value: 100, color: "#f87171" },
+  { name: "Knowledge", value: 100, color: "#34d399" },
+  
 ];
 
 const pipelineSteps: PipelineStep[] = [
   { name: "Vision Agent", color: "text-amber-400 border-amber-500/30 bg-amber-950/20" },
   { name: "Wind Agent", color: "text-cyan-400 border-cyan-500/30 bg-cyan-950/20" },
   { name: "Mag Agent", color: "text-purple-400 border-purple-500/30 bg-purple-950/20" },
-  { name: "Knowledge Agent", color: "text-emerald-400 border-emerald-500/30 bg-emerald-950/20" },
   { name: "CME Genesis AI", color: "text-red-400 border-red-500/30 bg-red-950/20" },
+  { name: "Knowledge Agent", color: "text-emerald-400 border-emerald-500/30 bg-emerald-950/20" },
+  
 ];
 
 const agents: Agent[] = [
