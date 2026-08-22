@@ -136,11 +136,9 @@ const toPercent = (value?: number) => {
   return value <= 1 ? value * 100 : value;
 };
 
-// Historical Match is intentionally NOT taken from backend.
-// Keep it random.
-const [historicalMatch] = useState(() =>
-  Math.floor(Math.random() * 31) + 60
-);
+// Historical Match has no backend/ID value.
+// Keep it as one fixed hardcoded value everywhere.
+const HISTORICAL_MATCH = 75;
 
 const radarData: RadarDataPoint[] = [
   {
@@ -165,7 +163,7 @@ const radarData: RadarDataPoint[] = [
   },
   {
     metric: "Historical Match",
-    value: historicalMatch,
+    value: HISTORICAL_MATCH,
   },
 ];
 
@@ -276,7 +274,7 @@ const radarData: RadarDataPoint[] = [
       items: [
         {
           label: "Historical Match",
-          value: 0,
+          value: HISTORICAL_MATCH,
           icon: CircleDot,
         },
       ],
