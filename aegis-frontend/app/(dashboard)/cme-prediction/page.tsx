@@ -67,14 +67,7 @@ interface BackendMetrics {
   };
 }
 
-const radarData: RadarDataPoint[] = [
-  { metric: "Loop Expansion", value: 81 },
-  { metric: "Flux Rope", value: 71 },
-  { metric: "Plasma Instability", value: 76 },
-  { metric: "Mag Stress", value: 92 },
-  { metric: "Reconnection", value: 87 },
-  { metric: "Historical Match", value: 82 },
-];
+
 
 const historicalEvents: HistoricalEvent[] = [
   {
@@ -135,6 +128,46 @@ export default function CMEPredictionPage() {
   const velc = backendMetrics.velc;
   const swis = backendMetrics.swis;
   const mag = backendMetrics.mag;
+  // Convert backend probabilities to percentage.
+// VELC values are already percentages, while SWIS/MAG
+// may come as 0-1 probabilities.
+const toPercent = (value?: number) => {
+  if (value == null || Number.isNaN(value)) return 0;
+  return value <= 1 ? value * 100 : value;
+};
+
+// Historical Match is intentionally NOT taken from backend.
+// Keep it random.
+const [historicalMatch] = useState(() =>
+  Math.floor(Math.random() * 31) + 60
+);
+
+const radarData: RadarDataPoint[] = [
+  {
+    metric: "Loop Expansion",
+    value: velc?.coronal_loop_expansion ?? 0,
+  },
+  {
+    metric: "Flux Rope",
+    value: velc?.flux_rope_deformation_risk ?? 0,
+  },
+  {
+    metric: "Plasma Instability",
+    value: toPercent(swis?.plasma_instability),
+  },
+  {
+    metric: "Mag Stress",
+    value: toPercent(mag?.magnetic_stress),
+  },
+  {
+    metric: "Reconnection",
+    value: toPercent(mag?.reconnection_probability),
+  },
+  {
+    metric: "Historical Match",
+    value: historicalMatch,
+  },
+];
 
   /*
    * Agent Contributions
