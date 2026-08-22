@@ -262,20 +262,63 @@ export default function SolarMonitorPage() {
                   </span>
                 </div>
 
-                <div className="flex flex-col items-center pt-2 shrink-0">
-                  <div className="text-[10px] text-slate-400 mb-2 whitespace-nowrap">
-                    ΔIntensity (%)
-                  </div>
-                  <div
-                    className="w-3 h-32 rounded-sm"
-                    style={{ background: "linear-gradient(to top, #1d4ed8, #f8fafc 50%, #ef4444)" }}
-                  />
-                  <div className="flex flex-col justify-between h-32 -mt-32 ml-6 text-[10px] text-slate-400">
-                    <span className="text-red-400">+50</span>
-                    <span>0</span>
-                    <span className="text-blue-400">−50</span>
-                  </div>
-                </div>
+                <div
+  style={{
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "flex-start",
+    gap: "8px",
+    marginLeft: "18px",
+  }}
+>
+  <div
+    style={{
+      color: "#94a3b8",
+      fontSize: "12px",
+      fontWeight: 500,
+      marginBottom: "4px",
+      whiteSpace: "nowrap",
+    }}
+  >
+    ΔIntensity (%)
+  </div>
+
+  <div
+    style={{
+      display: "flex",
+      alignItems: "stretch",
+      gap: "8px",
+      height: "120px",
+    }}
+  >
+    {/* Color bar */}
+    <div
+      style={{
+        width: "12px",
+        height: "120px",
+        borderRadius: "12px",
+        background:
+          "linear-gradient(to bottom, #dc4c4c 0%, #6b3840 35%, #102f40 50%, #248fbd 75%, #229dcc 100%)",
+      }}
+    />
+
+    {/* Labels */}
+    <div
+      style={{
+        height: "120px",
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "space-between",
+        fontSize: "10px",
+        lineHeight: 1,
+      }}
+    >
+      <span style={{ color: "#ef5350" }}>+50</span>
+      <span style={{ color: "#94a3b8" }}>0</span>
+      <span style={{ color: "#29a9d6" }}>−50</span>
+    </div>
+  </div>
+</div>
               </div>
             </div>
 
