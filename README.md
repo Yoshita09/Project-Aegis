@@ -1,311 +1,329 @@
-# Project Aegis
+# 🛰️ AEGIS — AI Space Weather Threat Intelligence
 
-## AI-Powered Space Weather Threat Intelligence Platform
+<p align="center">
+  <strong>Predict. Analyze. Protect.</strong><br/>
+  An AI-powered command center for detecting and analyzing space-weather threats from solar and in-situ observations.
+</p>
 
-Project Aegis is a full-stack AI platform designed to detect, analyze, and predict space weather events that can impact satellites, communication systems, navigation infrastructure, and power grids.
-
-The platform combines multiple specialized AI agents, historical event retrieval, and an interactive intelligence dashboard to provide real-time situational awareness of solar activity and potential Earth-directed threats.
-
-Using data from solar imagery, solar wind observations, magnetic field measurements, and historical space weather records, Project Aegis generates explainable predictions for:
-
-* CME (Coronal Mass Ejection) formation
-* Solar storm severity
-* Earth arrival estimation
-* Satellite vulnerability assessment
-* Historical event similarity analysis
-* Multi-agent reasoning and confidence scoring
+<p align="center">
+  <a href="https://project-aegis-chi.vercel.app/">Live Demo</a> ·
+  <a href="https://github.com/Yoshita09/Project-Aegis">Source Code</a>
+</p>
 
 ---
 
-# Architecture
+## Overview
+
+**AEGIS** is a full-stack space-weather intelligence platform built to turn heterogeneous solar observations into an operational threat picture.
+
+The system combines three active inference agents — **VELC**, **SWIS**, and **MAG** — behind a FastAPI orchestration layer and presents the results through a Next.js mission-control interface. The backend exposes structured health, upload, and analysis APIs, while the frontend provides an interactive solar-monitoring experience with 3D visualization and dedicated intelligence views.
+
+> **Important:** AEGIS is an experimental research/engineering system, not an operational space-weather warning service. Model outputs should be treated as decision-support signals and independently validated before any real-world use.
+
+## Why AEGIS?
+
+Space-weather observations arrive in different formats and capture different parts of the solar environment. AEGIS is designed around a **multi-agent approach**, allowing specialized models to analyze different evidence streams before their outputs are surfaced together.
+
+The current implementation focuses on:
+
+- **Solar imagery intelligence** from VELC observations
+- **Solar-wind intelligence** from SWIS/ASPEX-style telemetry
+- **Magnetic-field intelligence** from magnetometer observations
+- Structured agent health and inference APIs
+- An interactive web command center for monitoring and analysis
+
+## System Architecture
 
 ```text
-                    Project Aegis
-
-        ┌─────────────────────────────────┐
-        │         Frontend Layer          │
-        │      Next.js + TypeScript       │
-        │         Tailwind CSS            │
-        └─────────────────┬───────────────┘
-                          │
-                          ▼
-
-        ┌─────────────────────────────────┐
-        │          FastAPI Backend        │
-        │       Agent Orchestration       │
-        └─────────────────┬───────────────┘
-                          │
-
-      ┌───────────────────┼────────────────────┐
-      │                   │                    │
-      ▼                   ▼                    ▼
-
- Vision Agent      Solar Wind Agent    Magnetic Agent
-     (ViT)              (TFT)          (Transformer)
-
-      └──────────────┬──────────────┬──────────────┘
-                     ▼
-             Fusion Intelligence
-          (XGBoost + Transformer)
-
-                     ▼
-
-             CME Probability Engine
-
-      ┌──────────────┼──────────────┐
-      ▼              ▼              ▼
-
- Historical     Arrival Time    Satellite Risk
- Intelligence    Prediction          GNN
-      (RAG)        Agent
+                         ┌─────────────────────────┐
+                         │       AEGIS WEB UI      │
+                         │ Next.js + TypeScript    │
+                         │ Three.js / R3F / Charts │
+                         └────────────┬────────────┘
+                                      │ HTTP / JSON
+                                      ▼
+                         ┌─────────────────────────┐
+                         │      FASTAPI CORE       │
+                         │ Routing • CORS • Health │
+                         │ Lifecycle • Errors      │
+                         └────────────┬────────────┘
+                                      │
+                         ┌────────────┴────────────┐
+                         ▼                         ▼
+                ┌─────────────────┐      ┌─────────────────┐
+                │  AGENT REGISTRY │      │ Payload / API   │
+                │ Shared instances│      │ processing      │
+                └────────┬────────┘      └─────────────────┘
+                         │
+              ┌──────────┼──────────┐
+              ▼          ▼          ▼
+           ┌──────┐   ┌──────┐   ┌──────┐
+           │ VELC │   │ SWIS │   │ MAG  │
+           │ ViT  │   │Temporal│  │Mag. │
+           │      │   │ model │   │model│
+           └──┬───┘   └──┬───┘   └──┬───┘
+              └──────────┼──────────┘
+                         ▼
+                 Structured outputs
+                 + confidence signals
+                         │
+                         ▼
+              Dashboard / Intelligence Views
 ```
 
----
+The backend maintains a central `AgentRegistry` so active agent instances are loaded once and reused by API routes rather than repeatedly loading model resources.
 
-# Frontend
+## Active AI Agents
 
-The frontend provides an interactive command center for monitoring space weather threats and understanding AI-generated predictions.
+### 1. VELC — Solar Vision Agent
 
-## Technology Stack
+The VELC agent processes FITS solar imagery using a customized **Vision Transformer (ViT-B/16)** pipeline.
 
-- Next.js
-- TypeScript
-- Tailwind CSS
-- Three.js
-- React Three Fiber
-- Framer Motion
-- Recharts
+The implementation normalizes the incoming image, converts it to three channels, resizes it to `224×224`, applies ImageNet normalization, and returns three interpretable signals:
 
-## Dashboard Modules
+- Coronal loop expansion
+- Flux-rope deformation risk
+- Pre-eruption signal strength
 
-### Overview
+The model is loaded from a `.pth` state dictionary and runs in evaluation mode on the backend.
 
-Centralized mission dashboard displaying overall threat levels and system status.
+### 2. SWIS — Solar Wind Agent
 
-### Data Input
+The SWIS agent is responsible for extracting signal from solar-wind telemetry, providing a specialized view of plasma and solar-wind conditions within the AEGIS pipeline.
 
-Upload and process payload data from supported instruments.
+### 3. MAG — Magnetic Agent
 
-### Solar Monitor
+The MAG agent analyzes magnetic-field observations to surface signatures relevant to magnetic stress, complexity, and possible solar eruptive activity.
 
-Visual monitoring of solar activity and precursor signals.
+### Agent Contract
 
-### CME Prediction
+All active agents follow a common abstraction through `BaseAgent`, which standardizes model lifecycle, prediction, loaded-state checks, health reporting, and inference error handling.
 
-Displays CME formation probability and confidence scores generated by the fusion model.
+## Frontend
 
-### Arrival & Impact
+The web application is built with **Next.js, React, TypeScript, Tailwind CSS, Three.js, React Three Fiber, Framer Motion, and Recharts**.
 
-Shows estimated Earth arrival time and projected impact severity.
+The public landing experience is designed as a mission-control entry point with:
 
-### Satellite Risk
+- AEGIS command branding
+- Interactive 3D solar visualization
+- Mission/navigation links
+- System-status indicator
+- Dashboard launch flow
+- Monitoring and agent-reasoning sections
 
-Visualizes risk assessments for satellite infrastructure.
+### Live deployment
 
-### Agent Reasoning
+**https://project-aegis-chi.vercel.app/**
 
-Provides explainable AI outputs and contribution scores from each agent.
+## Backend
 
-### System Status
+The backend uses **FastAPI** with a lifespan hook that configures logging and loads all registered agents during application startup. It also includes CORS middleware and structured exception handling for both expected AEGIS errors and unexpected server failures.
 
-Monitors health and availability of backend services and AI agents.
+### Backend stack
 
----
+- Python
+- FastAPI
+- Pydantic
+- PyTorch
+- TorchVision
+- NumPy
+- Astropy
+- FITS / scientific-data tooling
+- Pandas / NetCDF / CDF tooling
+- Loguru
 
-# Backend
+The current dependency set is captured in `aegis-backend/requirements.txt`.
 
-The backend consists of a multi-agent AI architecture built using FastAPI and PyTorch.
-
-## Technology Stack
-
-* Python
-* FastAPI
-* PyTorch
-* XGBoost
-* Scikit-Learn
-* Transformers
-* Graph Neural Networks
-* RAG Pipeline
-
----
-
-# AI Agents
-
-## Agent 1 — Solar Vision Agent
-
-### Model
-
-Vision Transformer (ViT)
-
-### Input
-
-VELC Solar Images
-
-### Responsibilities
-
-* Loop Expansion Detection
-* Flux Rope Detection
-* Eruption Signal Identification
-* Active Region Analysis
-
----
-
-## Agent 2 — Solar Wind Agent
-
-### Model
-
-Temporal Fusion Transformer (TFT)
-
-### Input
-
-SWIS / ASPEX Data
-
-### Responsibilities
-
-* Plasma Instability Detection
-* Velocity Analysis
-* Density Fluctuation Analysis
-* Solar Wind Anomaly Detection
-
----
-
-## Agent 3 — Magnetic Agent
-
-### Model
-
-Transformer Network
-
-### Input
-
-Magnetometer Payload Data
-
-### Responsibilities
-
-* Magnetic Stress Detection
-* Reconnection Detection
-* Field Complexity Analysis
-* CME Trigger Assessment
-
----
-
-## Agent 4 — CME Genesis Fusion Agent
-
-### Model
-
-XGBoost + Fusion Transformer
-
-### Responsibilities
-
-Combines outputs from all precursor agents and generates the final CME formation probability.
-
----
-
-## Agent 5 — Historical Intelligence Agent
-
-### Model
-
-Retrieval-Augmented Generation (RAG)
-
-### Responsibilities
-
-Matches current solar conditions against historical space weather events.
-
-### Example Matches
-
-* Halloween Storm (2003)
-* Carrington-Class Events
-* September Storms
-* Other major geomagnetic disturbances
-
----
-
-## Agent 6 — Solar Arrival Prediction Agent
-
-### Responsibilities
-
-* CME Travel Time Prediction
-* Earth Arrival Estimation
-* Impact Window Calculation
-
----
-
-## Agent 7 — Satellite Risk Agent
-
-### Model
-
-Graph Neural Network (GNN)
-
-### Responsibilities
-
-* Satellite Network Risk Assessment
-* Orbit Exposure Analysis
-* Communication Disruption Prediction
-* Infrastructure Vulnerability Assessment
-
----
-
-# Repository Structure
+## Repository Structure
 
 ```text
-Project-Aegis
+Project-Aegis/
+├── aegis-frontend/          # Next.js web application
+│   ├── app/                 # App Router pages and layouts
+│   ├── components/         # Reusable UI + 3D components
+│   ├── lib/                # Frontend utilities
+│   ├── hooks/              # React hooks
+│   └── public/              # Static assets
 │
-├── frontend/
+├── aegis-backend/           # FastAPI inference service
 │   ├── app/
-│   ├── components/
-│   ├── lib/
-│   ├── hooks/
-│   └── public/
+│   │   ├── agents/          # VELC, SWIS, MAG + shared agent layer
+│   │   ├── api/             # Versioned API routes
+│   │   ├── core/             # Settings, logging, exceptions
+│   │   └── schemas/          # Typed API / agent outputs
+│   ├── requirements.txt
+│   └── ...
 │
-├── backend/
-│   ├── agents/
-│   │   ├── solar_vision_agent/
-│   │   ├── solar_wind_agent/
-│   │   ├── magnetic_agent/
-│   │   ├── fusion_agent/
-│   │   ├── rag_agent/
-│   │   ├── arrival_agent/
-│   │   └── satellite_risk_agent/
-│   │
-│   ├── api/
-│   ├── models/
-│   ├── services/
-│   ├── utils/
-│   └── main.py
-│
-├── datasets/
-├── notebooks/
-├── README.md
-└── requirements.txt
+├── .gitattributes
+├── .gitignore
+└── README.md
 ```
 
+## Getting Started
+
+### Prerequisites
+
+- Node.js 20+ recommended
+- Python 3.10+
+- Git
+
+### 1. Clone
+
+```bash
+git clone https://github.com/Yoshita09/Project-Aegis.git
+cd Project-Aegis
+```
+
+### 2. Start the backend
+
+```bash
+cd aegis-backend
+python -m venv .venv
+
+# macOS / Linux
+source .venv/bin/activate
+
+# Windows
+# .venv\Scripts\activate
+
+pip install -r requirements.txt
+uvicorn app.main:app --reload
+```
+
+The FastAPI application exposes a root liveness endpoint and the versioned API router configured by the backend settings.
+
+### 3. Start the frontend
+
+```bash
+cd aegis-frontend
+npm install
+npm run dev
+```
+
+The frontend provides `dev`, `build`, `start`, and `lint` scripts through Next.js.
+
+Then open:
+
+```text
+http://localhost:3000
+```
+
+## API / Inference Flow
+
+At a high level, an analysis request follows this pattern:
+
+```text
+Observation / Payload
+        │
+        ▼
+   FastAPI endpoint
+        │
+        ▼
+   Agent Registry
+        │
+        ├──► VELC inference
+        ├──► SWIS inference
+        └──► MAG inference
+        │
+        ▼
+ Typed Pydantic outputs
+        │
+        ▼
+ Frontend intelligence views
+```
+
+The shared agent abstraction requires concrete implementations to provide `load()`, `predict()`, and health reporting, keeping API-facing inference contracts consistent across agents.
+
+## Design Principles
+
+**Modular inference** — each data source gets a specialized agent rather than forcing every signal into one model.
+
+**Typed outputs** — Pydantic schemas provide an explicit contract between model code and the API layer.
+
+**Single agent lifecycle** — the registry owns active agent instances and loads them during application startup.
+
+**Explainability-first UI** — surface individual evidence streams instead of presenting only one opaque score.
+
+**Scientific humility** — predictions are probabilistic signals and should expose uncertainty, validation status, and provenance wherever possible.
+
+## Current State
+
+AEGIS currently has a working full-stack foundation with:
+
+- A production-style Next.js frontend structure
+- FastAPI backend with versioned routing
+- Centralized active-agent registry
+- Real VELC ViT inference implementation
+- SWIS and MAG agent modules
+- Typed schemas and structured error handling
+- Interactive 3D / data-visualization UI
+
+The codebase also contains forward-looking architecture for additional intelligence layers, but these should only be described as production capabilities once they are fully wired into the active runtime.
+
+## Roadmap
+
+### Near term
+
+- [ ] Add explicit uncertainty intervals to every agent output
+- [ ] Standardize confidence calibration across agents
+- [ ] Add model/version metadata to inference responses
+- [ ] Add automated backend + frontend tests
+- [ ] Add API documentation examples for each analysis route
+- [ ] Improve observability for model load/inference latency
+
+### Intelligence layer
+
+- [ ] Fuse VELC, SWIS, and MAG outputs into a calibrated threat score
+- [ ] Add historical event retrieval with provenance
+- [ ] Add CME arrival-time estimation
+- [ ] Add infrastructure / satellite impact scoring
+- [ ] Add event timeline and alert generation
+
+### Data
+
+- [ ] Integrate live Aditya-L1 feeds where licensing and availability permit
+- [ ] Add robust scientific-data validation and schema versioning
+- [ ] Build reproducible benchmark datasets and evaluation notebooks
+
+## Limitations
+
+AEGIS should not be interpreted as an operational forecasting authority. Space-weather prediction is inherently uncertain, and a model output without calibrated uncertainty, ground truth, and provenance can be misleading.
+
+Before presenting AEGIS as an operational system, the project should establish:
+
+1. Reproducible evaluation datasets
+2. Clear train/validation/test separation
+3. Calibration and uncertainty metrics
+4. Baselines against established forecasting methods
+5. Monitoring for data drift and model degradation
+6. Versioned model artifacts and experiment tracking
+
+## Contributing
+
+Contributions are welcome, especially around model evaluation, scientific-data handling, UI/UX, testing, and observability.
+
+```bash
+git checkout -b feature/your-feature
+# make changes
+git add .
+git commit -m "feat: describe your change"
+git push origin feature/your-feature
+```
+
+Then open a pull request with a concise explanation of what changed, why it changed, how it was tested, and any model/data assumptions.
+
+## Citation & Acknowledgement
+
+AEGIS is an engineering/research platform exploring how multimodal AI systems can help interpret space-weather observations, with particular emphasis on the Aditya-L1 ecosystem and scientific telemetry workflows.
+
+## License
+
+Add the project's chosen license here before publishing AEGIS as an open-source project.
+
 ---
 
-# Key Capabilities
-
-* Multi-Agent Space Weather Intelligence
-* CME Formation Prediction
-* Historical Event Similarity Search
-* Earth Arrival Forecasting
-* Satellite Risk Analysis
-* Explainable AI Reasoning
-* Real-Time Monitoring Dashboard
-* Full-Stack Deployment Architecture
-
----
-
-# Future Roadmap
-
-* Real-time Aditya-L1 data ingestion
-* Autonomous alert generation
-* Multi-satellite data fusion
-* Advanced uncertainty estimation
-* Explainable reasoning graphs
-* Digital twin for space weather simulation
-
----
-
-## Project Aegis
-
-**Predict. Analyze. Protect.**
-
-An AI-powered platform for proactive space weather monitoring and threat assessment.
+<p align="center">
+  <strong>AEGIS</strong><br/>
+  <sub>AI-powered space weather intelligence</sub>
+</p>
