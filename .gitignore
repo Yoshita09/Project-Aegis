@@ -40,3 +40,18 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 *.pth
+
+# Python virtual environment
+aegis-backend/venv/
+venv/
+
+# Python cache
+__pycache__/
+*.pyc
+
+# Node modules
+aegis-frontend/node_modules/
+node_modules/
+
+# Environment files
+.env.local

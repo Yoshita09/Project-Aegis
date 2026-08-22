@@ -40,6 +40,7 @@ interface AgentGroup {
   border: string;
   bg: string;
   icon: React.ComponentType<{ className?: string }>;
+  contribution: number;
   items: AgentItem[];
 }
 
@@ -60,12 +61,13 @@ const radarData: RadarDataPoint[] = [
 
 const agentGroups: AgentGroup[] = [
   {
-    name: "VISION AGENT (ViT)",
-    color: "text-amber-400",
-    border: "border-amber-500/30",
-    bg: "bg-amber-950/20",
-    icon: Video,
-    items: [
+      name: "VISION AGENT (ViT)",
+      color: "text-amber-400",
+      border: "border-amber-500/30",
+      bg: "bg-amber-950/20",
+      icon: Video,
+      contribution: 30,
+      items: [
       {
         label: "Loop Expansion",
         value: 81,
@@ -84,13 +86,14 @@ const agentGroups: AgentGroup[] = [
     ],
   },
 
-  {
-    name: "SOLAR WIND AGENT (TFT)",
-    color: "text-cyan-400",
-    border: "border-cyan-500/30",
-    bg: "bg-cyan-950/20",
-    icon: Wind,
-    items: [
+ {
+        name: "SOLAR WIND AGENT (TFT)",
+        color: "text-cyan-400",
+        border: "border-cyan-500/30",
+        bg: "bg-cyan-950/20",
+        icon: Wind,
+        contribution: 15,
+        items: [
       {
         label: "Plasma Instability",
         value: 81,
@@ -105,12 +108,13 @@ const agentGroups: AgentGroup[] = [
   },
 
   {
-    name: "MAGNETIC AGENT (TRANSFORMER)",
-    color: "text-purple-400",
-    border: "border-purple-500/30",
-    bg: "bg-purple-950/20",
-    icon: Magnet,
-    items: [
+        name: "MAGNETIC AGENT (TRANSFORMER)",
+        color: "text-purple-400",
+        border: "border-purple-500/30",
+        bg: "bg-purple-950/20",
+        icon: Magnet,
+        contribution: 35,
+        items: [
       {
         label: "Magnetic Stress",
         value: 88,
@@ -125,12 +129,13 @@ const agentGroups: AgentGroup[] = [
   },
 
   {
-    name: "KNOWLEDGE AGENT (RAG+LLM)",
-    color: "text-emerald-400",
-    border: "border-emerald-500/30",
-    bg: "bg-emerald-950/20",
-    icon: Brain,
-    items: [
+        name: "KNOWLEDGE AGENT (RAG+LLM)",
+        color: "text-emerald-400",
+        border: "border-emerald-500/30",
+        bg: "bg-emerald-950/20",
+        icon: Brain,
+        contribution: 20,
+        items: [
       {
         label: "Historical Match",
         value: 87,
@@ -500,22 +505,14 @@ export default function CMEPredictionPage() {
                   stroke="currentColor"
                   strokeWidth="5"
                   strokeLinecap="round"
-                  strokeDasharray={`${(group.items.reduce(
-                    (sum, item) => sum + item.value,
-                    0
-                  ) / group.items.length / 100) * 163} 163`}
+                strokeDasharray={`${(group.contribution / 100) * 163} 163`}
                   className={group.color}
                 />
               </svg>
 
               <div className="absolute inset-0 flex items-center justify-center">
                 <span className={`text-sm font-bold ${group.color}`}>
-                  {Math.round(
-                    group.items.reduce(
-                      (sum, item) => sum + item.value,
-                      0
-                    ) / group.items.length
-                  )}%
+                {group.contribution}%
                 </span>
               </div>
             </div>
