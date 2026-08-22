@@ -3,7 +3,7 @@
 import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Upload, CheckCircle, Loader2, FileArchive, Zap } from "lucide-react";
-import { useAnalysis } from "../../context/AnalysisContext";
+import { useAnalysis } from "../../../context/AnalysisContext";
 import Topbar from "@/components/Topbar";
 
 // ─── Types ────────────────────────────────────────────────────────────────────

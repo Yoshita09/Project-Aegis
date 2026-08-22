@@ -9,7 +9,6 @@ import {
   ShieldAlert,
   Satellite,
   Brain,
-  Server,
   Upload,
   Lock,
 } from "lucide-react";
@@ -18,17 +17,44 @@ import logo from "@/app/assets/logo.png";
 import Image from "next/image";
 
 const topNavItems = [
-  { name: "Overview", href: "/", icon: LayoutDashboard },
-  { name: "Data Input", href: "/data-input", icon: Upload },
+  {
+    name: "Dashboard",
+    href: "/dashboard",
+    icon: LayoutDashboard,
+  },
+  {
+    name: "Data Input",
+    href: "/data-input",
+    icon: Upload,
+  },
 ];
 
 const lockedNavItems = [
-  { name: "Solar Monitor", href: "/solar-monitor", icon: Activity },
-  { name: "CME Prediction", href: "/cme-prediction", icon: Radar },
-  { name: "Arrival & Impact", href: "/arrival-impact", icon: ShieldAlert },
-  { name: "Satellite Risk", href: "/satellite-risk", icon: Satellite },
-  { name: "Agent Reasoning", href: "/agent-reasoning", icon: Brain },
-  // { name: "System Status", href: "/system-status", icon: Server },
+  {
+    name: "Solar Monitor",
+    href: "/solar-monitor",
+    icon: Activity,
+  },
+  {
+    name: "CME Prediction",
+    href: "/cme-prediction",
+    icon: Radar,
+  },
+  {
+    name: "Arrival & Impact",
+    href: "/arrival-impact",
+    icon: ShieldAlert,
+  },
+  {
+    name: "Satellite Risk",
+    href: "/satellite-risk",
+    icon: Satellite,
+  },
+  {
+    name: "Agent Reasoning",
+    href: "/agent-reasoning",
+    icon: Brain,
+  },
 ];
 
 export default function Sidebar() {
@@ -36,68 +62,225 @@ export default function Sidebar() {
   const { analysisComplete } = useAnalysis();
 
   return (
-    <aside className="w-64 min-h-screen border-r border-slate-800 bg-[#07111f] flex-shrink-0">
-      <div className="p-6">
-  <div className="flex items-center gap-3">
-    <Image
-  src={logo}
-  alt="AEGIS Logo"
-  width={42}
-  height={46}
-/>
-    <div>
-      <h1 className="text-2xl font-bold text-cyan-400">
-        AEGIS
-      </h1>
-      <p className="text-xs text-slate-500">
-        AI Space Defense Platform
-      </p>
-    </div>
-  </div>
-</div>
-      <div className="px-4">
-        <div className="mb-6 rounded-xl border border-red-500/30 bg-red-500/10 p-4">
-          <p className="text-red-400 text-sm font-semibold">● CRITICAL</p>
-          <p className="text-slate-400 text-xs mt-1">Threat Level: 91%</p>
-        </div>
+    <aside
+  style={{
+    width: "252px",
+    height: "100vh",
+    overflow: "hidden",
+    flexShrink: 0,
+    background: "#07111f",
+    borderRight: "1px solid rgba(56, 189, 248, 0.12)",
+  }}
+>
+      {/* =====================================================
+          AEGIS BRANDING
+      ===================================================== */}
 
-        <nav className="space-y-2">
-          {/* Always accessible */}
+      <Link
+        href="/"
+        style={{
+          display: "flex",
+          alignItems: "center",
+          textDecoration: "none",
+          padding: "20px 20px 16px",
+          gap: "7px",
+        }}
+      >
+        <Image
+          src={logo}
+          alt="AEGIS"
+          width={60}
+          height={60}
+          priority
+          style={{
+            width: "50px",
+            height: "50px",
+            objectFit: "contain",
+            flexShrink: 0,
+          }}
+        />
+
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "center",
+          }}
+        >
+          <div
+            style={{
+              color: "#f8fafc",
+              fontSize: "23px",
+              lineHeight: "1",
+              fontWeight: 800,
+              letterSpacing: "2.5px",
+              whiteSpace: "nowrap",
+            }}
+          >
+            AEGIS
+          </div>
+
+          <div
+            style={{
+              marginTop: "6px",
+              color: "#64748b",
+              fontSize: "7.3px",
+              lineHeight: "1",
+              letterSpacing: "2.1px",
+              whiteSpace: "nowrap",
+              fontWeight: 500,
+            }}
+          >
+            AI SPACE DEFENSE PLATFORM
+          </div>
+        </div>
+      </Link>
+
+      {/* =====================================================
+          SIDEBAR CONTENT
+      ===================================================== */}
+
+      <div
+        style={{
+          padding: "0 9px",
+        }}
+      >
+        {/* Threat status
+
+        <div
+          style={{
+            marginBottom: "18px",
+            borderRadius: "18px",
+            border: "1px solid rgba(248, 113, 113, 0.35)",
+            background: "rgba(127, 29, 29, 0.16)",
+            padding: "15px 20px",
+          }}
+        >
+          <p
+            style={{
+              margin: 0,
+              color: "#ff646d",
+              fontSize: "14px",
+              fontWeight: 700,
+            }}
+          >
+            ● CRITICAL
+          </p>
+
+          <p
+            style={{
+              margin: "7px 0 0",
+              color: "#94a3b8",
+              fontSize: "13px",
+            }}
+          >
+            Threat Level: 91%
+          </p>
+        </div> */}
+
+        {/* Navigation */}
+
+        <nav
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            gap: "3px",
+          }}
+        >
           {topNavItems.map((item) => {
             const active = pathname === item.href;
+            const Icon = item.icon;
+
             return (
               <Link
                 key={item.href}
                 href={item.href}
-                className={`flex items-center gap-3 rounded-xl px-4 py-3 transition-all ${
-                  active
-                    ? "bg-cyan-500/10 border border-cyan-500/30 text-cyan-400"
-                    : "text-slate-400 hover:bg-slate-800"
-                }`}
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "15px",
+                  minHeight: "48px",
+                  padding: "0 20px",
+                  borderRadius: "16px",
+                  textDecoration: "none",
+                  color: active ? "#22d3ee" : "#94a3b8",
+                  background: active
+                    ? "rgba(34, 211, 238, 0.08)"
+                    : "transparent",
+                  border: active
+                    ? "1px solid rgba(34, 211, 238, 0.32)"
+                    : "1px solid transparent",
+                  transition: "all 0.2s ease",
+                }}
               >
-                <item.icon size={18} />
-                {item.name}
+                <Icon
+                  size={18}
+                  strokeWidth={1.8}
+                />
+
+                <span
+                  style={{
+                    fontSize: "15px",
+                    fontWeight: active ? 500 : 400,
+                  }}
+                >
+                  {item.name}
+                </span>
               </Link>
             );
           })}
 
           {/* Divider */}
-          <div className="my-3 border-t border-slate-800" />
 
-          {/* Locked until analysis complete */}
+          <div
+            style={{
+              height: "1px",
+              background: "rgba(100, 116, 139, 0.17)",
+              margin: "12px 0 17px",
+            }}
+          />
+
+          {/* Locked items */}
+
           {lockedNavItems.map((item) => {
             const active = pathname === item.href;
+            const Icon = item.icon;
 
             if (!analysisComplete) {
               return (
                 <div
                   key={item.href}
-                  className="flex items-center gap-3 rounded-xl px-4 py-3 text-slate-600 opacity-50 cursor-not-allowed select-none"
-                  style={{ pointerEvents: "none" }}
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "15px",
+                    minHeight: "48px",
+                    padding: "0 20px",
+                    color: "#334155",
+                    opacity: 0.72,
+                    cursor: "not-allowed",
+                    userSelect: "none",
+                    pointerEvents: "none",
+                  }}
                 >
-                  <item.icon size={18} />
-                  <span className="flex-1">{item.name}</span>
-                  <Lock size={13} className="text-slate-600" />
+                  <Icon
+                    size={18}
+                    strokeWidth={1.8}
+                  />
+
+                  <span
+                    style={{
+                      flex: 1,
+                      fontSize: "15px",
+                    }}
+                  >
+                    {item.name}
+                  </span>
+
+                  <Lock
+                    size={15}
+                    strokeWidth={1.8}
+                  />
                 </div>
               );
             }
@@ -106,14 +289,37 @@ export default function Sidebar() {
               <Link
                 key={item.href}
                 href={item.href}
-                className={`flex items-center gap-3 rounded-xl px-4 py-3 transition-all ${
-                  active
-                    ? "bg-cyan-500/10 border border-cyan-500/30 text-cyan-400"
-                    : "text-slate-400 hover:bg-slate-800"
-                }`}
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "15px",
+                  minHeight: "48px",
+                  padding: "0 20px",
+                  borderRadius: "16px",
+                  textDecoration: "none",
+                  color: active ? "#22d3ee" : "#94a3b8",
+                  background: active
+                    ? "rgba(34, 211, 238, 0.08)"
+                    : "transparent",
+                  border: active
+                    ? "1px solid rgba(34, 211, 238, 0.32)"
+                    : "1px solid transparent",
+                  transition: "all 0.2s ease",
+                }}
               >
-                <item.icon size={18} />
-                {item.name}
+                <Icon
+                  size={18}
+                  strokeWidth={1.8}
+                />
+
+                <span
+                  style={{
+                    flex: 1,
+                    fontSize: "15px",
+                  }}
+                >
+                  {item.name}
+                </span>
               </Link>
             );
           })}
