@@ -68,30 +68,25 @@ function fbm(
 function diverge(v: number): [number, number, number] {
   v = Math.max(-1, Math.min(1, v));
 
-  // Positive = RED
-  if (v > 0) {
+  if (v >= 0) {
     const t = v;
 
+    // muted solar-red
     return [
-      255,
-      Math.round(255 - t * 170),
-      Math.round(255 - t * 170),
+      Math.round(70 + t * 150),
+      Math.round(35 + t * 45),
+      Math.round(42 + t * 35),
     ];
   }
 
-  // Negative = BLUE
-  if (v < 0) {
-    const t = -v;
+  const t = -v;
 
-    return [
-      Math.round(255 - t * 190),
-      Math.round(255 - t * 110),
-      255,
-    ];
-  }
-
-  // Zero = WHITE
-  return [255, 255, 255];
+  // cyan / blue
+  return [
+    Math.round(18 + t * 20),
+    Math.round(55 + t * 105),
+    Math.round(80 + t * 130),
+  ];
 }
 
 export default function CoronalDifferenceCanvas({
