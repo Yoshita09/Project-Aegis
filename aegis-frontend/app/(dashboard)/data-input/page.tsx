@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import {useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Upload, CheckCircle, Loader2, FileArchive, Zap } from "lucide-react";
 import { useAnalysis } from "../../../context/AnalysisContext";
@@ -286,6 +286,13 @@ const [status, setStatus] = useState("Initializing AI Pipeline...");
 );
       if (!response.ok) throw new Error(`Server error code: ${response.status}`);
       const data = await response.json();
+      localStorage.setItem(
+  "aegis-agent-metrics",
+  JSON.stringify({
+    ...(JSON.parse(localStorage.getItem("aegis-agent-metrics") || "{}")),
+    [agentType]: data.analysis_metrics,
+  })
+);
 
       if (agentType === "velc") { 
         setVelcUploaded(true); 
