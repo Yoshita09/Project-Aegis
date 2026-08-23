@@ -6,8 +6,15 @@
 </p>
 
 <p align="center">
-  <a href="https://project-aegis-chi.vercel.app/">Live Demo</a> ·
-  <a href="https://github.com/Yoshita09/Project-Aegis">Source Code</a>
+  <a href="https://project-aegis-chi.vercel.app/">
+    <img src="https://img.shields.io/badge/LIVE%20DEMO-VISIT%20PLATFORM-2563EB?style=for-the-badge" alt="Live Demo"/>
+  </a>
+  <a href="https://youtu.be/syHAzjLgGaE">
+    <img src="https://img.shields.io/badge/WATCH%20DEMO-YOUTUBE-DC2626?style=for-the-badge" alt="Demo Video"/>
+  </a>
+  <a href="https://github.com/Yoshita09/Project-Aegis">
+    <img src="https://img.shields.io/badge/SOURCE%20CODE-GITHUB-374151?style=for-the-badge&logo=github&logoColor=white" alt="Source Code"/>
+  </a>
 </p>
 
 ---
