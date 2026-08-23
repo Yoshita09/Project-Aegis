@@ -35,40 +35,133 @@ The current implementation focuses on:
 ## System Architecture
 
 ```text
-                         ┌─────────────────────────┐
-                         │       AEGIS WEB UI      │
-                         │ Next.js + TypeScript    │
-                         │ Three.js / R3F / Charts │
-                         └────────────┬────────────┘
-                                      │ HTTP / JSON
-                                      ▼
-                         ┌─────────────────────────┐
-                         │      FASTAPI CORE       │
-                         │ Routing • CORS • Health │
-                         │ Lifecycle • Errors      │
-                         └────────────┬────────────┘
-                                      │
-                         ┌────────────┴────────────┐
-                         ▼                         ▼
-                ┌─────────────────┐      ┌─────────────────┐
-                │  AGENT REGISTRY │      │ Payload / API   │
-                │ Shared instances│      │ processing      │
-                └────────┬────────┘      └─────────────────┘
-                         │
-              ┌──────────┼──────────┐
-              ▼          ▼          ▼
-           ┌──────┐   ┌──────┐   ┌──────┐
-           │ VELC │   │ SWIS │   │ MAG  │
-           │ ViT  │   │Temporal│  │Mag. │
-           │      │   │ model │   │model│
-           └──┬───┘   └──┬───┘   └──┬───┘
-              └──────────┼──────────┘
-                         ▼
-                 Structured outputs
-                 + confidence signals
-                         │
-                         ▼
-              Dashboard / Intelligence Views
+                    ┌──────────────────────────────┐
+                    │       ADITYA-L1 DATA         │
+                    │      MULTI-PAYLOAD INPUT      │
+                    └──────────────┬───────────────┘
+                                   │
+           ┌───────────────────────┼────────────────────────┐
+           │                       │                        │
+           ▼                       ▼                        ▼
+   ┌───────────────┐       ┌───────────────┐       ┌────────────────┐
+   │  VELC IMAGES  │       │ SWIS / ASPEX  │       │ MAGNETOMETER   │
+   │ Solar Corona  │       │ Plasma Data   │       │ Magnetic Data  │
+   └───────┬───────┘       └───────┬───────┘       └───────┬────────┘
+           │                       │                        │
+           └───────────────┬───────┴───────────────┬────────┘
+                           ▼                       ▼
+              ┌─────────────────────────────────────────┐
+              │     DATA PREPROCESSING & FEATURE        │
+              │           EXTRACTION LAYER              │
+              │                                         │
+              │ • FITS/Image Processing                 │
+              │ • Time-Series Normalization             │
+              │ • Missing Data Handling                 │
+              │ • Feature Engineering                   │
+              │ • Temporal Alignment                    │
+              └───────────────────┬─────────────────────┘
+                                  │
+                                  ▼
+        ┌─────────────────────────────────────────────────────┐
+        │              MULTI-AGENT INTELLIGENCE               │
+        └─────────────────────────────────────────────────────┘
+             │                  │                  │
+             ▼                  ▼                  ▼
+
+   ┌─────────────────┐  ┌─────────────────┐  ┌──────────────────┐
+   │ AGENT 1         │  │ AGENT 2         │  │ AGENT 3          │
+   │ SOLAR VISION    │  │ SOLAR WIND      │  │ MAGNETIC         │
+   │ ViT             │  │ TFT             │  │ TRANSFORMER      │
+   │                 │  │                 │  │                  │
+   │ • Loop Expansion│  │ • Plasma        │  │ • Magnetic Stress│
+   │ • Flux Rope     │  │   Instability   │  │ • Reconnection   │
+   │ • Eruption      │  │ • Wind Anomaly  │  │ • Field Complexity│
+   │   Signal        │  │ • Density       │  │ • CME Trigger    │
+   └────────┬────────┘  └────────┬────────┘  └────────┬─────────┘
+            │                    │                    │
+            │      30%           │       15%          │     35%
+            │                    │                    │
+            └────────────────────┼────────────────────┘
+                                 │
+                                 ▼
+                    ┌────────────────────────┐
+                    │ CURRENT EVENT STATE    │
+                    │ & PRECURSOR SUMMARY    │
+                    └───────────┬────────────┘
+                                │
+                                ▼
+                    ┌────────────────────────┐
+                    │ AGENT 4               │
+                    │ KNOWLEDGE AGENT       │
+                    │ RAG + LLM             │
+                    │                        │
+                    │ • Historical Retrieval │
+                    │ • Event Similarity     │
+                    │ • Scientific Context   │
+                    │ • Pattern Validation   │
+                    └───────────┬────────────┘
+                                │
+                               20%
+                                │
+                                ▼
+        ┌─────────────────────────────────────────────────┐
+        │         CME GENESIS FUSION ENGINE               │
+        │       XGBoost + Fusion Transformer              │
+        │                                                 │
+        │   Magnetic Agent    → 35%                       │
+        │   Vision Agent      → 30%                       │
+        │   Knowledge Agent   → 20%                       │
+        │   Solar Wind Agent  → 15%                       │
+        │                                                 │
+        │        Weighted Multi-Agent Fusion              │
+        └─────────────────────┬───────────────────────────┘
+                              │
+                              ▼
+                 ┌────────────────────────────┐
+                 │     CME GENESIS ENGINE     │
+                 │                            │
+                 │ • CME Probability          │
+                 │ • Confidence Score         │
+                 │ • Threat Level             │
+                 │ • Explainable Reasoning    │
+                 └─────────────┬──────────────┘
+                               │
+                    ┌──────────┴───────────┐
+                    │                      │
+              CME DETECTED            NO CME / LOW RISK
+                    │                      │
+                    ▼                      ▼
+        ┌────────────────────┐      Continue Monitoring
+        │ DOWNSTREAM AGENTS  │
+        └──────────┬─────────┘
+                   │
+          ┌────────┴────────┐
+          │                 │
+          ▼                 ▼
+
+  ┌───────────────────┐  ┌──────────────────────┐
+  │ AGENT 5           │  │ AGENT 6              │
+  │ ARRIVAL PREDICTION│  │ SATELLITE RISK       │
+  │                   │  │ GNN                  │
+  │ • Travel Time     │  │                      │
+  │ • Earth Arrival   │  │ • Orbit Exposure     │
+  │ • Impact Window   │  │ • Infrastructure     │
+  └─────────┬─────────┘  │   Vulnerability      │
+            │            │ • Communication Risk │
+            │            └──────────┬───────────┘
+            └──────────────┬────────┘
+                           ▼
+               ┌─────────────────────────┐
+               │   FINAL THREAT REPORT   │
+               │                         │
+               │ • CME Probability       │
+               │ • Arrival Estimate      │
+               │ • Impact Severity       │
+               │ • Satellite Risk        │
+               │ • Historical Analogs    │
+               │ • Agent Contributions   │
+               │ • Recommended Action    │
+               └─────────────────────────┘
 ```
 
 The backend maintains a central `AgentRegistry` so active agent instances are loaded once and reused by API routes rather than repeatedly loading model resources.
@@ -94,6 +187,59 @@ The SWIS agent is responsible for extracting signal from solar-wind telemetry, p
 ### 3. MAG — Magnetic Agent
 
 The MAG agent analyzes magnetic-field observations to surface signatures relevant to magnetic stress, complexity, and possible solar eruptive activity.
+
+### 4. Knowledge Agent
+
+The **Knowledge Agent** acts as the **intelligence and contextual reasoning layer** of AEGIS.
+
+It takes the observations and predictions generated by the other agents and places them into a broader scientific context.
+
+It helps with:
+
+- Interpreting agent outputs
+- Connecting observations with known solar phenomena
+- Providing scientific context
+- Supporting explainable reasoning
+- Generating a coherent assessment from multiple sources
+
+In simple terms:
+
+> **The other agents generate evidence; the Knowledge Agent helps AEGIS understand what that evidence means.**
+
+---
+
+### 5. CME Genesis Agent
+
+The **CME Genesis Agent** focuses specifically on determining **how and why a CME may form**.
+
+It uses the available solar observations and agent outputs to characterize the **genesis of a potential CME**, including the conditions leading up to an eruption.
+
+It helps answer:
+
+- Is an eruption developing?
+- What solar conditions are associated with its formation?
+- How strong is the evidence for CME genesis?
+- What characteristics might the resulting CME have?
+
+The agent connects **pre-eruption signals to CME formation** and combines evidence from the upstream intelligence layers to produce an explainable CME-genesis assessment.
+
+---
+
+### 6. Satellite Risk Agent
+
+The **Satellite Risk Agent** evaluates the potential consequences of the predicted space-weather event for satellites and space-based infrastructure.
+
+It assesses risks associated with the resulting solar disturbance, including potential effects on:
+
+- Satellite operations
+- Communication systems
+- Navigation systems
+- Spacecraft electronics
+- Radiation environment
+
+Its goal is to convert the predicted solar event into an **actionable satellite-risk assessment**, helping identify potential exposure and vulnerability of space-based infrastructure.
+
+
 
 ### Agent Contract
 
@@ -327,3 +473,5 @@ Add the project's chosen license here before publishing AEGIS as an open-source 
   <strong>AEGIS</strong><br/>
   <sub>AI-powered space weather intelligence</sub>
 </p>
+
+Made By Team-SheSolves
