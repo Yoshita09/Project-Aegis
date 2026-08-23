@@ -1,4 +1,4 @@
-# 🛰️ AEGIS — AI Space Weather Threat Intelligence
+# AEGIS —Autonomous Early-warning and Geospatial Intelligence System
 
 <p align="center">
   <strong>Predict. Analyze. Protect.</strong><br/>
